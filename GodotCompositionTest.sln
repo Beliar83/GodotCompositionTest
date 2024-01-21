@@ -1,0 +1,35 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodotCompositionTest", "GodotCompositionTest.csproj", "{05FF70F9-2C50-46BC-A37F-E64A00C20AFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{4EA98538-C086-4772-81DD-47EF69A9D214}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodotCompositionSourceGenerator", "GodotCompositionSourceGenerator\GodotCompositionSourceGenerator.csproj", "{18539B73-C3C8-4CDA-A857-B46C5D4FE965}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+	Debug|Any CPU = Debug|Any CPU
+	ExportDebug|Any CPU = ExportDebug|Any CPU
+	ExportRelease|Any CPU = ExportRelease|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{05FF70F9-2C50-46BC-A37F-E64A00C20AFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05FF70F9-2C50-46BC-A37F-E64A00C20AFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05FF70F9-2C50-46BC-A37F-E64A00C20AFF}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
+		{05FF70F9-2C50-46BC-A37F-E64A00C20AFF}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
+		{05FF70F9-2C50-46BC-A37F-E64A00C20AFF}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
+		{05FF70F9-2C50-46BC-A37F-E64A00C20AFF}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+		{4EA98538-C086-4772-81DD-47EF69A9D214}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EA98538-C086-4772-81DD-47EF69A9D214}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EA98538-C086-4772-81DD-47EF69A9D214}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EA98538-C086-4772-81DD-47EF69A9D214}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{4EA98538-C086-4772-81DD-47EF69A9D214}.ExportRelease|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EA98538-C086-4772-81DD-47EF69A9D214}.ExportRelease|Any CPU.Build.0 = Debug|Any CPU
+		{18539B73-C3C8-4CDA-A857-B46C5D4FE965}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18539B73-C3C8-4CDA-A857-B46C5D4FE965}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18539B73-C3C8-4CDA-A857-B46C5D4FE965}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18539B73-C3C8-4CDA-A857-B46C5D4FE965}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{18539B73-C3C8-4CDA-A857-B46C5D4FE965}.ExportRelease|Any CPU.ActiveCfg = Debug|Any CPU
+		{18539B73-C3C8-4CDA-A857-B46C5D4FE965}.ExportRelease|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+EndGlobal

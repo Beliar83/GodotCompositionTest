@@ -1,0 +1,26 @@
+<Project Sdk="Godot.NET.Sdk/4.1.2">
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Test\**" />
+    <Compile Remove="CompositionSourceGenerator\**" />
+    <Compile Remove="CompositionSourceGenerator.Tests\**" />
+    <Compile Remove="CompositionSourceGenerator_old\**" />
+    <Compile Remove="Data\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Test\**" />
+    <EmbeddedResource Remove="CompositionSourceGenerator\**" />
+    <EmbeddedResource Remove="CompositionSourceGenerator.Tests\**" />
+    <EmbeddedResource Remove="CompositionSourceGenerator_old\**" />
+    <EmbeddedResource Remove="Data\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Test\Test.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Arch" Version="1.2.7" />
+  </ItemGroup>  
+</Project>
