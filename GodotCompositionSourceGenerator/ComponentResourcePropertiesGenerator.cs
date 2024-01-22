@@ -14,7 +14,7 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         IncrementalValuesProvider<INamedTypeSymbol> componentTypes = context.SyntaxProvider.ForAttributeWithMetadataName(
-            "GodotCompositionTest.ComponentAttribute",
+            "GodotComposition.ComponentAttribute",
             (node, _) => node is ClassDeclarationSyntax,
             (syntaxContext, _) => (INamedTypeSymbol)syntaxContext.TargetSymbol);
         
@@ -30,7 +30,7 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
 
         AttributeData componentAttribute = componentType.GetAttributes(
         ).Single(a =>
-            a.AttributeClass?.ContainingNamespace.Name == "GodotCompositionTest" &&
+            a.AttributeClass?.ContainingNamespace.Name == "GodotComposition" &&
             a.AttributeClass?.Name == "ComponentAttribute");
 
         if (componentAttribute.AttributeConstructor is null) return;
@@ -39,7 +39,7 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
 
         // ITypeSymbol internalComponentType = componentAttribute.AttributeConstructor.TypeArguments.First();
         AttributeData? internalComponentAttribute = internalComponentType.GetAttributes().FirstOrDefault(a =>
-            a.AttributeClass?.Name == "Component" && a.AttributeClass?.ContainingNamespace.Name == "Test");
+            a.AttributeClass?.Name == "Component" && a.AttributeClass?.ContainingNamespace.Name == "GodotComposition.Components");
         bool exportAllProperties;
         List<IPropertySymbol> members = internalComponentType.GetMembers().OfType<IPropertySymbol>().ToList();
         if (internalComponentAttribute is not null)
@@ -51,7 +51,7 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
             exportAllProperties = members.All(p =>
                 p.GetAttributes().All(a => 
                     a.AttributeClass?.Name != "ComponentPropertyAttribute" ||
-                    a.AttributeClass?.ContainingNamespace.Name != "Test"
+                    a.AttributeClass?.ContainingNamespace.Name != "GodotComposition.Components"
                     ));
         }
         
@@ -99,7 +99,7 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
                 exportAllProperties || 
                 propertySymbol.GetAttributes().Any(a => 
                     a.AttributeClass?.Name == "ComponentPropertyAttribute" &&
-                    a.AttributeClass?.ContainingNamespace.Name == "Test");
+                    a.AttributeClass?.ContainingNamespace.Name == "GodotComposition.Components");
             if (exportProperty)
             {
                 var name = $"{propertySymbol.Name}Name";

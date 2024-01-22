@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotCompositionTest.addons.entityeditor;
+namespace GodotComposition.addons.entityeditor;
 
 public partial class EntityEditor : VBoxContainer
 {

@@ -1,7 +1,7 @@
 using Godot;
 using Godot.Collections;
 
-namespace GodotCompositionTest;
+namespace GodotComposition;
 
 [GlobalClass]
 [Tool]

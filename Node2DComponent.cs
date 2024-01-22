@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Godot;
-using Godot.Collections;
-using Test;
-using InternalNode2Component = Test.Node2DComponent;
+﻿using Godot;
+using InternalNode2Component = GodotComposition.Components.Node2DComponent;
 
-namespace GodotCompositionTest;
+namespace GodotComposition;
 
 [Component(typeof(InternalNode2Component))]
 [GlobalClass]

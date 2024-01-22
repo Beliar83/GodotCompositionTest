@@ -1,8 +1,8 @@
 using Godot;
 
-namespace GodotCompositionTest;
+namespace GodotComposition;
 
-public partial class TestComponent : GodotCompositionTest.Component
+public partial class TestComponent : Component
 {
 	[Export]
 	public int Test {get;set;}

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GodotCompositionTest;
+namespace GodotComposition;
 
 [AttributeUsage(AttributeTargets.Class)]
 public class ComponentAttribute : Attribute

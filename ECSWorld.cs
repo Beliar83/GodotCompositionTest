@@ -1,17 +1,14 @@
-using System.Collections.Generic;
 using System.Linq;
-using Arch.Core.Extensions;
 using Godot;
-using Godot.Bridge;
 
-namespace GodotCompositionTest;
+namespace GodotComposition;
 
 [Tool]
 [GlobalClass]
-public partial class World : Node
+public partial class ECSWorld : Node
 {
-	private Arch.Core.World world = Arch.Core.World.Create();
-	
+	public Arch.Core.World World { get; } = Arch.Core.World.Create();
+
 	/// <inheritdoc />
 	public override void _Process(double delta)
 	{

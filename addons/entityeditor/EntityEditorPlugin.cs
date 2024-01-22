@@ -1,6 +1,7 @@
 #if TOOLS
 using Godot;
-using System;
+
+namespace GodotComposition.addons.entityeditor;
 
 [Tool]
 public partial class EntityEditorPlugin : EditorPlugin

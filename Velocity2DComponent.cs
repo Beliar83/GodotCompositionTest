@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace GodotCompositionTest;
+namespace GodotComposition;
 
 [GlobalClass]
 [Tool]

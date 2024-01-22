@@ -4,24 +4,24 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Test\**" />
     <Compile Remove="CompositionSourceGenerator\**" />
     <Compile Remove="CompositionSourceGenerator.Tests\**" />
     <Compile Remove="CompositionSourceGenerator_old\**" />
     <Compile Remove="Data\**" />
     <Compile Remove="GodotCompositionSourceGenerator\**" />
+    <Compile Remove="GodotComposition.Components\**" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Remove="Test\**" />
     <EmbeddedResource Remove="CompositionSourceGenerator\**" />
     <EmbeddedResource Remove="CompositionSourceGenerator.Tests\**" />
     <EmbeddedResource Remove="CompositionSourceGenerator_old\**" />
     <EmbeddedResource Remove="Data\**" />
     <EmbeddedResource Remove="GodotCompositionSourceGenerator\**" />
+    <EmbeddedResource Remove="GodotComposition.Components\**" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="GodotComposition.Components\GodotComposition.Components.csproj" />
     <ProjectReference Include="GodotCompositionSourceGenerator\GodotCompositionSourceGenerator.csproj" OutputItemType="Analyzer"/>
-    <ProjectReference Include="Test\Test.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Arch" Version="1.2.7" />
