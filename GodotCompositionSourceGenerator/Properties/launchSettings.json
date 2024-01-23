@@ -3,7 +3,7 @@
   "profiles": {
     "DebugRoslynAnalyzers": {
       "commandName": "DebugRoslynComponent",
-      "targetProject": "../GodotCompositionTest.csproj"
+      "targetProject": "../GodotComposition.csproj"
     }
   }
 }

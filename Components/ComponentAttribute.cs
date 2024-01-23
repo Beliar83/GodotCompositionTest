@@ -1,4 +1,4 @@
-﻿namespace GodotComposition.Components;
+﻿namespace Components;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
 public class ComponentAttribute : Attribute

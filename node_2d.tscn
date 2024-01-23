@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://bb20gy3jortc0"]
 
 [ext_resource type="Script" path="res://ECSWorld.cs" id="1_yrqr2"]
-[ext_resource type="Script" path="res://Entity.cs" id="2_fexjk"]
+[ext_resource type="Script" path="res://ECSEntity.cs" id="2_fexjk"]
 [ext_resource type="PackedScene" uid="uid://ct4kdcylsnj6c" path="res://TestNode.tscn" id="3_8fp1j"]
 [ext_resource type="Script" path="res://Node2DComponent.cs" id="4_28ntf"]
 [ext_resource type="Script" path="res://Velocity2DComponent.cs" id="5_xwylm"]
@@ -13,11 +13,12 @@ Position = Vector2(50, 50)
 
 [sub_resource type="Resource" id="Resource_1cmay"]
 script = ExtResource("5_xwylm")
-Velocity = Vector2(1, 0)
+Velocity = Vector2(100, 0)
 
 [node name="World" type="Node"]
 script = ExtResource("1_yrqr2")
 
-[node name="Entity" type="Node" parent="."]
+[node name="Entity" type="Node2D" parent="."]
+position = Vector2(50, 50)
 script = ExtResource("2_fexjk")
 Components = [SubResource("Resource_516m7"), SubResource("Resource_1cmay")]

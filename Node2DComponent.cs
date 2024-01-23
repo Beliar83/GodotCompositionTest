@@ -1,9 +1,9 @@
 ﻿using Godot;
-using InternalNode2Component = GodotComposition.Components.Node2DComponent;
+using Node2D = Components.Node2D;
 
 namespace GodotComposition;
 
-[Component(typeof(InternalNode2Component))]
+[Component(typeof(Node2D))]
 [GlobalClass]
 [Tool]
 public partial class Node2DComponent : Component

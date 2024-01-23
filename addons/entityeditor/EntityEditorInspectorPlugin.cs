@@ -7,7 +7,7 @@ public partial class EntityEditorInspectorPlugin : EditorInspectorPlugin
     /// <inheritdoc />
     public override bool _CanHandle(GodotObject @object)
     {
-        return @object is Entity;
+        return @object is ECSEntity;
     }
 
     /// <inheritdoc />

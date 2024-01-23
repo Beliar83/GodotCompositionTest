@@ -1,6 +1,6 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodotComposition.Components", "GodotComposition.Components\GodotComposition.Components.csproj", "{4EA98538-C086-4772-81DD-47EF69A9D214}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Components", "Components\Components.csproj", "{4EA98538-C086-4772-81DD-47EF69A9D214}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodotCompositionSourceGenerator", "GodotCompositionSourceGenerator\GodotCompositionSourceGenerator.csproj", "{18539B73-C3C8-4CDA-A857-B46C5D4FE965}"
 EndProject

@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="CompositionSourceGenerator\**" />
@@ -10,6 +11,7 @@
     <Compile Remove="Data\**" />
     <Compile Remove="GodotCompositionSourceGenerator\**" />
     <Compile Remove="GodotComposition.Components\**" />
+    <Compile Remove="Components\**" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Remove="CompositionSourceGenerator\**" />
@@ -18,12 +20,15 @@
     <EmbeddedResource Remove="Data\**" />
     <EmbeddedResource Remove="GodotCompositionSourceGenerator\**" />
     <EmbeddedResource Remove="GodotComposition.Components\**" />
+    <EmbeddedResource Remove="Components\**" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="GodotComposition.Components\GodotComposition.Components.csproj" />
+    <ProjectReference Include="Components\Components.csproj" />
     <ProjectReference Include="GodotCompositionSourceGenerator\GodotCompositionSourceGenerator.csproj" OutputItemType="Analyzer"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Arch" Version="1.2.7" />
+    <PackageReference Include="Arch.System" Version="1.0.2" />
+    <PackageReference Include="Arch.System.SourceGenerator" Version="1.1.2" />
   </ItemGroup>
 </Project>

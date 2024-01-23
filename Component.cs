@@ -1,3 +1,4 @@
+using Arch.Core;
 using Godot;
 using Godot.Collections;
 
@@ -7,6 +8,9 @@ namespace GodotComposition;
 [Tool]
 public abstract partial class Component : Resource
 {
+    // We make the component have this, as Entity.Add is a generic and needs to know the actual type.
+    public abstract void AddToEntity(Entity entity);
+    
     protected virtual void InternalGetPropertyList(Array<Dictionary> properties)
     {
     }

@@ -37,9 +37,8 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
 
         var internalComponentType = (INamedTypeSymbol)componentAttribute.ConstructorArguments.First().Value!;
 
-        // ITypeSymbol internalComponentType = componentAttribute.AttributeConstructor.TypeArguments.First();
         AttributeData? internalComponentAttribute = internalComponentType.GetAttributes().FirstOrDefault(a =>
-            a.AttributeClass?.Name == "Component" && a.AttributeClass?.ContainingNamespace.Name == "GodotComposition.Components");
+            a.AttributeClass?.Name == "Component" && a.AttributeClass?.ContainingNamespace.Name == "Components");
         bool exportAllProperties;
         List<IPropertySymbol> members = internalComponentType.GetMembers().OfType<IPropertySymbol>().ToList();
         if (internalComponentAttribute is not null)
@@ -51,37 +50,45 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
             exportAllProperties = members.All(p =>
                 p.GetAttributes().All(a => 
                     a.AttributeClass?.Name != "ComponentPropertyAttribute" ||
-                    a.AttributeClass?.ContainingNamespace.Name != "GodotComposition.Components"
+                    a.AttributeClass?.ContainingNamespace.Name != "Components"
                     ));
         }
         
-        const string internalName = "internalComponent";
         
         var sourceBuilder = new StringBuilder();
 
+        var internalComponentTypeString =
+            $"global::{internalComponentType.ContainingNamespace.Name}.{internalComponentType.Name}";
+        
         sourceBuilder.AppendLine("using Godot;");
         sourceBuilder.AppendLine("using Godot.Collections;");
-        sourceBuilder.AppendLine("using System.Diagnostics;");
+        sourceBuilder.AppendLine("using Arch.Core;");
+        sourceBuilder.AppendLine("using Arch.Core.Extensions;");
         sourceBuilder.AppendLine();
         sourceBuilder.AppendLine($"namespace {componentType.ContainingNamespace.Name};");
         sourceBuilder.AppendLine();
         sourceBuilder.AppendLine($"public partial class {componentType.Name}");
         sourceBuilder.AppendLine("{");
-        if (internalComponentType.TypeKind == TypeKind.Struct)
+        const string internalName = "InternalComponent";
+        bool isStruct = internalComponentType.TypeKind == TypeKind.Struct;
+        if (isStruct)
         {
-            sourceBuilder.AppendLine($"\tprivate global::{internalComponentType.ContainingNamespace.Name}.{internalComponentType.Name} {internalName} = new();");
+            sourceBuilder.AppendLine($"\tinternal {internalComponentTypeString} {internalName} {{ get; set;}} = new();");
         }
         else
         {
-            sourceBuilder.AppendLine($"\tprivate readonly global::{internalComponentType.ContainingNamespace.Name}.{internalComponentType.Name} {internalName} = new();");
+            sourceBuilder.AppendLine($"\tinternal {internalComponentTypeString} {internalName} {{ get; }}  = new();");
         }
         sourceBuilder.AppendLine();
         
+        // TODO: Add fields as properties
         
         var nameBuilder = new StringBuilder();
         var getPropertyListBuilder = new StringBuilder();
         var getBuilder = new StringBuilder();
         var setBuilder = new StringBuilder();
+
+        var propertyBuilder = new StringBuilder();
         
         getPropertyListBuilder.AppendLine("\tprotected override void InternalGetPropertyList(Array<Dictionary> properties)");
         getPropertyListBuilder.AppendLine("\t{");
@@ -99,7 +106,7 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
                 exportAllProperties || 
                 propertySymbol.GetAttributes().Any(a => 
                     a.AttributeClass?.Name == "ComponentPropertyAttribute" &&
-                    a.AttributeClass?.ContainingNamespace.Name == "GodotComposition.Components");
+                    a.AttributeClass?.ContainingNamespace.Name == "Components");
             if (exportProperty)
             {
                 var name = $"{propertySymbol.Name}Name";
@@ -135,7 +142,12 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
                 
                 getBuilder.AppendLine($"\t\tif (property == {name})");
                 getBuilder.AppendLine("\t\t{");
-                getBuilder.AppendLine($"\t\t\treturn {internalName}.{propertySymbol.Name};");
+                getBuilder.Append($"\t\t\treturn {propertySymbol.Name}");
+                if (propertySymbol.Type.NullableAnnotation == NullableAnnotation.Annotated)
+                {
+                    getBuilder.Append(" ?? new Variant()");
+                }
+                getBuilder.AppendLine(";");
                 getBuilder.AppendLine("\t\t}");
 
                 setBuilder.AppendLine($"\t\tif (property == {name})");
@@ -292,21 +304,34 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
                         throw new ArgumentOutOfRangeException();
                 }
 
-                if (internalComponentType.TypeKind == TypeKind.Struct)
-                {
-                    setBuilder.AppendLine($"\t\t\t{internalName} = {internalName} with {{ {propertySymbol.Name} = value.{conversionCall} }};");                    
-                }
-                else
-                {
-                    setBuilder.AppendLine($"\t\t\t{internalName}.{propertySymbol.Name} = value.{conversionCall};");
-                }
+                setBuilder.AppendLine($"\t\t\t{propertySymbol.Name} = value.{conversionCall};");
                 
-                // setBuilder.AppendLine("\t\t\t");
-                setBuilder.AppendLine("\t\treturn true;");
+                setBuilder.AppendLine("\t\t\treturn true;");
                 setBuilder.AppendLine("\t\t}");
-                
-                
+
             }
+
+            propertyBuilder.Append(
+                $"\tpublic global::{propertySymbol.Type.ContainingNamespace.Name}");
+            propertyBuilder.Append(
+                $".{propertySymbol.Type.Name}");
+            propertyBuilder.Append(
+                $"{(propertySymbol.Type.NullableAnnotation == NullableAnnotation.Annotated ? "?" : "")} ");
+            propertyBuilder.AppendLine(
+                $"{propertySymbol.Name}");
+            propertyBuilder.AppendLine("\t{");
+            propertyBuilder.AppendLine($"\t\tget => {internalName}.{propertySymbol.Name};");;
+            if (isStruct)
+            {
+                propertyBuilder.AppendLine(
+                    $"\t\tset => {internalName} = {internalName} with {{ {propertySymbol.Name} = value }};");
+            }
+            else
+            {
+                propertyBuilder.AppendLine($"\t\tset => {internalName}.{propertySymbol.Name} = value;");
+            }
+            propertyBuilder.AppendLine("\t}");
+            
         }
         
         getPropertyListBuilder.AppendLine();
@@ -319,6 +344,13 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
         setBuilder.AppendLine("\t}");
         
         sourceBuilder.Append(nameBuilder);
+        sourceBuilder.AppendLine();
+        sourceBuilder.Append(propertyBuilder);
+        sourceBuilder.AppendLine();
+        sourceBuilder.AppendLine("\tpublic override void AddToEntity(Entity entity)");
+        sourceBuilder.AppendLine("\t{");
+        sourceBuilder.AppendLine("\t\tentity.Add(InternalComponent);");
+        sourceBuilder.AppendLine("\t}");
         sourceBuilder.AppendLine();
         sourceBuilder.Append(getPropertyListBuilder);
         sourceBuilder.AppendLine();
