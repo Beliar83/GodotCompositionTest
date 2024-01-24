@@ -1,8 +1,9 @@
-﻿using Godot;
+﻿using Arch.Core;
+using Godot;
 
 namespace GodotComposition;
 
-[Component(typeof(Components.Velocity2D))]
+[Component(typeof(Data.Velocity2D))]
 [GlobalClass]
 [Tool]
 public partial class Velocity2DComponent : Component

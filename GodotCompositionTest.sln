@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodotCompositionSourceGener
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodotComposition", "GodotComposition.csproj", "{647AF7D0-FB86-4154-8F53-616F5E7152BB}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GodotComposition.Data", "GodotComposition.Data\GodotComposition.Data.fsproj", "{7C40D114-2B8D-4F4E-9A3C-D4F2C976B3E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 	Debug|Any CPU = Debug|Any CPU
@@ -31,5 +33,11 @@ Global
 		{647AF7D0-FB86-4154-8F53-616F5E7152BB}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
 		{647AF7D0-FB86-4154-8F53-616F5E7152BB}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
 		{647AF7D0-FB86-4154-8F53-616F5E7152BB}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+		{7C40D114-2B8D-4F4E-9A3C-D4F2C976B3E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C40D114-2B8D-4F4E-9A3C-D4F2C976B3E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C40D114-2B8D-4F4E-9A3C-D4F2C976B3E2}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C40D114-2B8D-4F4E-9A3C-D4F2C976B3E2}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{7C40D114-2B8D-4F4E-9A3C-D4F2C976B3E2}.ExportRelease|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C40D114-2B8D-4F4E-9A3C-D4F2C976B3E2}.ExportRelease|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 EndGlobal

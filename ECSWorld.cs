@@ -5,6 +5,7 @@ using Arch.Core.Extensions;
 using Arch.System;
 using Components;
 using Godot;
+using Microsoft.FSharp.Core;
 using Node2D = Godot.Node2D;
 
 namespace GodotComposition;
@@ -68,21 +69,21 @@ public partial class ECSWorld : Node {
 			if (!entity.Components.Any() || entity.Components.All(c => c == null)) continue;
 			foreach (Node2DComponent node2DComponent in entity.Components.OfType<Node2DComponent>())
 			{
-				if (node2DComponent.Template is null) continue;
-				if (node2DComponent.Instance != null)
+				if (FSharpOption<PackedScene>.get_IsNone(node2DComponent.Template)) continue;
+				if (FSharpOption<Node2D>.get_IsSome(node2DComponent.Instance))
 				{
 					continue;
 				}
 				
-				var instance = node2DComponent.Template.Instantiate<Node2D>();
+				var instance = node2DComponent.Template.Value.Instantiate<Node2D>();
 				instances.AddChild(instance);
 				node2DComponent.InternalComponent = node2DComponent.InternalComponent with { Instance = instance };
 				if (Engine.IsEditorHint())
 				{
 					continue;
 				}
-
-				if (entity.Entity?.Has<Components.Node2D>() ?? false)
+		
+				if (entity.Entity?.Has<Data.Node2D>() ?? false)
 				{
 					entity.Entity?.Set(node2DComponent.InternalComponent);
 				}
@@ -103,14 +104,15 @@ public partial class ECSWorld : Node {
 			{
 				Velocity2DComponent? velocity2DComponent =
 					entity.Components.OfType<Velocity2DComponent>().FirstOrDefault();
-
+		
 				foreach (Node2DComponent node2DComponent in entity.Components.OfType<Node2DComponent>())
 				{
-					if (node2DComponent.Instance is null) continue;
-					node2DComponent.Instance.Position = node2DComponent.Position;
+					
+					if (FSharpOption<Node2D>.get_IsNone(node2DComponent.Instance)) continue;
+					node2DComponent.Instance.Value.Position = node2DComponent.Position;
 					if (!Engine.IsEditorHint() && velocity2DComponent is not null)
 					{
-						node2DComponent.Instance.Position += velocity2DComponent.Velocity;
+						node2DComponent.Instance.Value.Position += velocity2DComponent.Velocity;
 					}
 					
 					entity.Position = node2DComponent.Position;

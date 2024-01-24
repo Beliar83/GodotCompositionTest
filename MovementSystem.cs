@@ -2,7 +2,8 @@
 using Arch.Core;
 using Arch.System;
 using Components;
-using Node2D = Components.Node2D;
+using GodotComposition.Data;
+using Node2D = GodotComposition.Data.Node2D;
 
 namespace GodotComposition;
 

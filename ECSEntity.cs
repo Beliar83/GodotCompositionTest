@@ -36,7 +36,7 @@ public partial class ECSEntity : Node2D
 
 			if (node2DComponent is not null)
 			{
-				node2DComponent.Position = Position;				
+				// node2DComponent.Position = Position;				
 			}
 		}
 			

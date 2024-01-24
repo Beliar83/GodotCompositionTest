@@ -58,28 +58,18 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
         var sourceBuilder = new StringBuilder();
 
         var internalComponentTypeString =
-            $"global::{internalComponentType.ContainingNamespace.Name}.{internalComponentType.Name}";
+            $"global::{internalComponentType.ContainingNamespace.ToDisplayString()}.{internalComponentType.Name}";
+
+        var usings = new HashSet<string>
+        {
+            "Godot",
+            "Godot.Collections",
+            "Arch.Core",
+            "Arch.Core.Extensions",
+        };
         
-        sourceBuilder.AppendLine("using Godot;");
-        sourceBuilder.AppendLine("using Godot.Collections;");
-        sourceBuilder.AppendLine("using Arch.Core;");
-        sourceBuilder.AppendLine("using Arch.Core.Extensions;");
-        sourceBuilder.AppendLine();
-        sourceBuilder.AppendLine($"namespace {componentType.ContainingNamespace.Name};");
-        sourceBuilder.AppendLine();
-        sourceBuilder.AppendLine($"public partial class {componentType.Name}");
-        sourceBuilder.AppendLine("{");
         const string internalName = "InternalComponent";
         bool isStruct = internalComponentType.TypeKind == TypeKind.Struct;
-        if (isStruct)
-        {
-            sourceBuilder.AppendLine($"\tinternal {internalComponentTypeString} {internalName} {{ get; set;}} = new();");
-        }
-        else
-        {
-            sourceBuilder.AppendLine($"\tinternal {internalComponentTypeString} {internalName} {{ get; }}  = new();");
-        }
-        sourceBuilder.AppendLine();
         
         // TODO: Add fields as properties
         
@@ -107,13 +97,40 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
                 propertySymbol.GetAttributes().Any(a => 
                     a.AttributeClass?.Name == "ComponentPropertyAttribute" &&
                     a.AttributeClass?.ContainingNamespace.Name == "Components");
+            var typeNameBuilder = new StringBuilder();
+            var isOption = false;
+            ITypeSymbol? optionType = null; 
+            typeNameBuilder.Append(
+                $"{propertySymbol.Type.ContainingNamespace.ToDisplayString()}.{propertySymbol.Type.Name}");
+
+            
+            
+            if (propertySymbol.Type is INamedTypeSymbol { IsGenericType: true } namedTypeSymbol)
+            {
+                typeNameBuilder.Append('<');
+
+                if (namedTypeSymbol.Name == "FSharpOption" &&
+                    namedTypeSymbol.ContainingNamespace.ToDisplayString() == "Microsoft.FSharp.Core")
+                {
+                    isOption = true;
+                    usings.Add("Microsoft.FSharp.Core");
+                    optionType = namedTypeSymbol.TypeArguments.First();
+                }
+
+                IEnumerable<string> types = namedTypeSymbol.TypeArguments.Select(ta => $"{ta.ContainingNamespace.ToDisplayString()}.{ta.Name}");
+
+                typeNameBuilder.Append(string.Join(", ", types));
+                    
+                typeNameBuilder.Append('>');
+            }
+
             if (exportProperty)
             {
                 var name = $"{propertySymbol.Name}Name";
                 
                 nameBuilder.AppendLine($"\tprivate static readonly StringName {name} = new (\"{propertySymbol.Name}\");");
 
-                MarshalType? marshalType = MarshalUtils.ConvertManagedTypeToMarshalType(propertySymbol.Type, typeCache);
+                MarshalType? marshalType = MarshalUtils.ConvertManagedTypeToMarshalType(isOption ? optionType! : propertySymbol.Type, typeCache);
 
                 if (marshalType is null)
                 {
@@ -142,24 +159,39 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
                 
                 getBuilder.AppendLine($"\t\tif (property == {name})");
                 getBuilder.AppendLine("\t\t{");
-                getBuilder.Append($"\t\t\treturn {propertySymbol.Name}");
-                if (propertySymbol.Type.NullableAnnotation == NullableAnnotation.Annotated)
+                if (isOption)
                 {
-                    getBuilder.Append(" ?? new Variant()");
+                    getBuilder.AppendLine($"\t\t\tif ({typeNameBuilder}.get_IsSome({propertySymbol.Name}))");
+                    getBuilder.AppendLine("\t\t\t{");
+                    getBuilder.AppendLine($"\t\t\t\treturn {propertySymbol.Name}.Value;");
+                    getBuilder.AppendLine("\t\t\t}");
+                    getBuilder.AppendLine("\t\t\telse");
+                    getBuilder.AppendLine("\t\t\t{");
+                    getBuilder.AppendLine("\t\t\t\tnew Variant();");
+                    getBuilder.AppendLine("\t\t\t}");
                 }
-                getBuilder.AppendLine(";");
+                else
+                {
+                    getBuilder.Append($"\t\t\treturn {propertySymbol.Name}");
+                    if (propertySymbol.Type.NullableAnnotation == NullableAnnotation.Annotated)
+                    {
+                        getBuilder.Append(" ?? new Variant()");
+                    }
+                    getBuilder.AppendLine(";");
+                }
                 getBuilder.AppendLine("\t\t}");
 
                 setBuilder.AppendLine($"\t\tif (property == {name})");
                 setBuilder.AppendLine("\t\t{");
                 string conversionCall;
+                ITypeSymbol propertyType = isOption ? optionType! : propertySymbol.Type;
                 switch (variantType)
                 {
                     case VariantType.Bool:
                         conversionCall = "AsBool()";
                         break;
                     case VariantType.Int:
-                        conversionCall = propertySymbol.Type.SpecialType switch
+                        conversionCall = propertyType.SpecialType switch
                         {
                             SpecialType.System_Int16 => "AsInt16()",
                             SpecialType.System_Int32 => "AsInt32()",
@@ -171,7 +203,7 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
                         };
                         break;
                     case VariantType.Float:
-                        conversionCall = propertySymbol.Type.SpecialType switch
+                        conversionCall = propertyType.SpecialType switch
                         {
                             SpecialType.System_Single => "AsSingle()",
                             SpecialType.System_Double => "AsDouble()",
@@ -239,7 +271,7 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
                         conversionCall = "AsRid()";
                         break;
                     case VariantType.Object:
-                        conversionCall = $"As<global::{propertySymbol.Type.ContainingNamespace.Name}.{propertySymbol.Type.Name}>()";
+                        conversionCall = $"As<global::{propertyType.ContainingNamespace.Name}.{propertyType.Name}>()";
                         break;
                     case VariantType.Callable:
                         conversionCall = "AsCallable()";
@@ -249,10 +281,10 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
                         break;
                     case VariantType.Dictionary:
                     {
-                        if (propertySymbol.Type is INamedTypeSymbol { IsGenericType: true } namedTypeSymbol)
+                        if (propertyType is INamedTypeSymbol { IsGenericType: true } dictionaryTypeSymbol)
                         {
                             conversionCall =
-                                $"AsGodotDictionary<{string.Join(',', namedTypeSymbol.TypeArguments.Select(t => t.Name))}>()";
+                                $"AsGodotDictionary<{string.Join(',', dictionaryTypeSymbol.TypeArguments.Select(t => t.Name))}>()";
                         }
                         else
                         {
@@ -262,10 +294,10 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
                         break;
                     case VariantType.Array:
                     {
-                        if (propertySymbol.Type is INamedTypeSymbol { IsGenericType: true } namedTypeSymbol)
+                        if (propertyType is INamedTypeSymbol { IsGenericType: true } arrayTypeSymbol)
                         {
                             conversionCall =
-                                $"AsGodotArray<{string.Join(',', namedTypeSymbol.TypeArguments.Select(t => t.Name))}>()";
+                                $"AsGodotArray<{string.Join(',', arrayTypeSymbol.TypeArguments.Select(t => t.Name))}>()";
                         }
                         else
                         {
@@ -304,7 +336,17 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
                         throw new ArgumentOutOfRangeException();
                 }
 
-                setBuilder.AppendLine($"\t\t\t{propertySymbol.Name} = value.{conversionCall};");
+                setBuilder.Append($"\t\t\t{propertySymbol.Name}");
+                if (isOption)
+                {
+                    setBuilder.Append($" = new {typeNameBuilder}(value.{conversionCall})");
+                }
+                else
+                {
+                    setBuilder.Append($" = value.{conversionCall}");
+                }
+                
+                setBuilder.AppendLine(";");
                 
                 setBuilder.AppendLine("\t\t\treturn true;");
                 setBuilder.AppendLine("\t\t}");
@@ -312,9 +354,7 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
             }
 
             propertyBuilder.Append(
-                $"\tpublic global::{propertySymbol.Type.ContainingNamespace.Name}");
-            propertyBuilder.Append(
-                $".{propertySymbol.Type.Name}");
+                $"\tpublic {typeNameBuilder}");
             propertyBuilder.Append(
                 $"{(propertySymbol.Type.NullableAnnotation == NullableAnnotation.Annotated ? "?" : "")} ");
             propertyBuilder.AppendLine(
@@ -342,8 +382,26 @@ public class ComponentResourcePropertiesGenerator : IIncrementalGenerator
         
         setBuilder.AppendLine("\t\treturn false;");
         setBuilder.AppendLine("\t}");
+
+        foreach (string @using in usings)
+        {
+            sourceBuilder.AppendLine($"using {@using};");
+        }
         
-        sourceBuilder.Append(nameBuilder);
+        sourceBuilder.AppendLine();
+        sourceBuilder.AppendLine($"namespace {componentType.ContainingNamespace.ToDisplayString()};");
+        sourceBuilder.AppendLine();
+        sourceBuilder.AppendLine($"public partial class {componentType.Name}");
+        sourceBuilder.AppendLine("{");
+        if (isStruct)
+        {
+            sourceBuilder.AppendLine($"\tinternal {internalComponentTypeString} {internalName} {{ get; set;}} = new();");
+        }
+        else
+        {
+            sourceBuilder.AppendLine($"\tinternal {internalComponentTypeString} {internalName} {{ get; }}  = new();");
+        }
+        sourceBuilder.AppendLine();        sourceBuilder.Append(nameBuilder);
         sourceBuilder.AppendLine();
         sourceBuilder.Append(propertyBuilder);
         sourceBuilder.AppendLine();

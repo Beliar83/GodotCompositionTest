@@ -2,6 +2,8 @@
 using Arch.Core;
 using Arch.System;
 using Components;
+using Godot;
+using Microsoft.FSharp.Core;
 
 namespace GodotComposition;
 
@@ -13,11 +15,11 @@ public partial class SyncNode2DSystem : BaseSystem<World, float>
 
     [Query]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SyncNode(ref Node2D node)
+    public void SyncNode(ref Data.Node2D node)
     {
-        if (node.Instance is not null)
+        if (FSharpOption<Node2D>.get_IsSome(node.Instance))
         {
-            node.Instance.Position = node.Position;
+            node.Instance.Value.Position = node.Position;
         }
     }
 }
